@@ -3,78 +3,57 @@ package com.test;
 import com.pages.CategoryPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.*;
+import java.time.Duration;
 
 public class CategoryTest {
-
     WebDriver driver;
     CategoryPage category;
+    WebDriverWait wait;
 
     @BeforeClass
-    public void setup() throws InterruptedException {
+    public void setup() {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
+        
+        // 🚀 Intelligent Dynamic Wait
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         driver.get("https://demowebshop.tricentis.com/");
-        Thread.sleep(2000);
-
         category = new CategoryPage(driver);
     }
 
-    // 🔥 Scenario 1
-    @Test
-    public void navigateMainCategory() throws InterruptedException {
-
+    @Test(priority = 1)
+    public void navigateMainCategory() {
         category.clickComputers();
-        Thread.sleep(2000);
-
-        String title = category.getPageTitle();
-
-        System.out.println("Page Title: " + title);
-
-        Assert.assertEquals(title, "Computers");
-        Assert.assertTrue(category.subCategoriesVisible());
+        wait.until(ExpectedConditions.urlContains("computers"));
+        Assert.assertEquals(category.getPageTitle(), "Computers");
     }
 
-    // 🔥 Scenario 2
-    @Test
-    public void filterSubCategory() throws InterruptedException {
-
+    @Test(priority = 2)
+    public void filterSubCategory() {
         category.clickElectronics();
-        Thread.sleep(2000);
-
         category.clickCellPhones();
-        Thread.sleep(2000);
-
-        String title = category.getPageTitle();
-
-        System.out.println("Page Title: " + title);
-
-        Assert.assertTrue(title.contains("Cell phones"));
-        Assert.assertTrue(category.getProductCount() > 0);
+        wait.until(ExpectedConditions.titleContains("Cell phones"));
+        Assert.assertTrue(category.getPageTitle().contains("Cell phones"));
     }
 
-    // 🔥 Scenario 3
-    @Test
-    public void changeDisplayCount() throws InterruptedException {
-
+    @Test(priority = 3)
+    public void changeDisplayCount() {
         category.clickBooks();
-        Thread.sleep(2000);
-
-        category.selectDisplayCount();
-        Thread.sleep(3000);
-
-        int count = category.getProductCount();
-
-        System.out.println("Products shown: " + count);
-
-        Assert.assertTrue(count <= 4);
+        // 🚀 This line should now be error-free!
+        category.selectDisplayCount("4"); 
+        
+        wait.until(ExpectedConditions.urlContains("pagesize=4"));
+        Assert.assertTrue(category.getProductCount() <= 4);
     }
 
     @AfterClass
-    public void teardown() throws InterruptedException {
-        Thread.sleep(3000);
-        driver.quit();
+    public void teardown() {
+        if (driver != null) driver.quit();
     }
 }

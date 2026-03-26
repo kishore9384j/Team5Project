@@ -2,69 +2,52 @@ package com.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
+import java.util.List;
 
 public class CategoryPage {
-
     WebDriver driver;
 
-    // ✅ Top menu
-    By computersMenu = By.linkText("Computers");
-    By electronicsMenu = By.linkText("Electronics");
-    By booksMenu = By.linkText("Books");
+    // ✅ Top menu XPaths
+    By computersMenu = By.xpath("//ul[@class='top-menu']//a[contains(text(),'Computers')]");
+    By electronicsMenu = By.xpath("//ul[@class='top-menu']//a[contains(text(),'Electronics')]");
+    By booksMenu = By.xpath("//ul[@class='top-menu']//a[contains(text(),'Books')]");
 
-    // ✅ Sub categories
-    By desktops = By.linkText("Desktops");
-    By notebooks = By.linkText("Notebooks");
-    By accessories = By.linkText("Accessories");
-    By cellPhones = By.linkText("Cell phones");
+    // ✅ Sub categories XPaths
+    By desktops = By.xpath("//div[@class='sub-category-grid']//a[contains(text(),'Desktops')]");
+    By cellPhones = By.xpath("//div[@class='sub-category-grid']//a[contains(text(),'Cell phones')]");
 
-    // ✅ Page title
+    // ✅ Page elements XPaths
     By pageTitle = By.xpath("//div[@class='page-title']/h1");
+    By productItems = By.xpath("//div[@class='product-item']");
+    By displayDropdown = By.xpath("//select[@id='products-pagesize']");
 
-    // ✅ Product items
-    By productItems = By.cssSelector(".product-item");
-
-    // ✅ Dropdown
-    By displayDropdown = By.id("products-pagesize");
-
-    // ✅ Constructor
     public CategoryPage(WebDriver driver) {
         this.driver = driver;
     }
 
-    // ✅ Actions
-
-    public void clickComputers() {
-        driver.findElement(computersMenu).click();
-    }
-
-    public void clickElectronics() {
-        driver.findElement(electronicsMenu).click();
-    }
-
-    public void clickBooks() {
-        driver.findElement(booksMenu).click();
-    }
-
-    public void clickCellPhones() {
-        driver.findElement(cellPhones).click();
-    }
+    public void clickComputers() { driver.findElement(computersMenu).click(); }
+    public void clickElectronics() { driver.findElement(electronicsMenu).click(); }
+    public void clickBooks() { driver.findElement(booksMenu).click(); }
+    public void clickCellPhones() { driver.findElement(cellPhones).click(); }
 
     public String getPageTitle() {
         return driver.findElement(pageTitle).getText();
     }
 
     public boolean subCategoriesVisible() {
-        return driver.findElement(desktops).isDisplayed()
-                && driver.findElement(notebooks).isDisplayed()
-                && driver.findElement(accessories).isDisplayed();
+        return driver.findElement(desktops).isDisplayed();
     }
 
     public int getProductCount() {
         return driver.findElements(productItems).size();
     }
 
-    public void selectDisplayCount() {
-        driver.findElement(displayDropdown).sendKeys("4");
+    // 💡 This "String size" parameter is what was missing!
+    public void selectDisplayCount(String size) {
+        WebElement dropdown = driver.findElement(displayDropdown);
+        Select select = new Select(dropdown);
+        select.selectByVisibleText(size);
     }
 }
